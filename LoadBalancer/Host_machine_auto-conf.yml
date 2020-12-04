@@ -1,1 +1,30 @@
-hrllo
+- hosts: 'BackEnd'
+  tasks :
+          - name: Installing HaProxy
+            package:
+                name: haproxy
+                state: present
+          - name: 'Replacing bind port'
+            replace: 
+              path: /etc/haproxy/haproxy.cfg
+              regexp: ":5000"
+              replace: ":8080"
+          - name: 'Removing . . .- '
+            lineinfile:
+               path: /etc/haproxy/haproxy.cfg
+               regexp: '{{item.From}}'
+               line: '{{item.To}}'
+               state: present
+            with_items:
+                    - { From: '127.0.0.1:5001', To: 'server app1 192.168.43.103:80 check' }
+                    - { From: '127.0.0.1:5002', To: 'server app2 192.168.43.2:80 check' }
+                    - { From: '127.0.0.1:5003', To: 'server app3 192.168.43.91:80 check' }               
+
+          - name: 'Starting HaProxy service :-'
+            service:
+              name: "haproxy"
+              state: started
+          - name: 'Stopping firewalld security'
+            service:
+              name: firewalld
+              state: stopped
