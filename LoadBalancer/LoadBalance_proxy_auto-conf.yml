@@ -1,1 +1,26 @@
-hello
+- hosts: 'FrontEnd'
+  tasks:
+         - name: 'Installing Httpd Server : -'
+           package: 
+              name: httpd
+              state: present
+
+
+         - name: 'Installing php interpreter : -'
+           package: 
+              name: php
+              state: present
+
+         - name: 'Copying sourch code into Root Directory : -'
+           copy:
+              src: /var/www/html/index.php
+              dest: /var/www/html/
+              mode: '555'
+         - name: 'Restarting Httpd Server :- '
+           service:
+               name: httpd
+               state: restarted
+         - name: 'Stoping Firewalld Security :-' 
+           service:
+               name: firewalld
+               state: stopped
