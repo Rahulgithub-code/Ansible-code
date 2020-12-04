@@ -1,30 +1,26 @@
-- hosts: 'BackEnd'
-  tasks :
-          - name: Installing HaProxy
-            package:
-                name: haproxy
-                state: present
-          - name: 'Replacing bind port'
-            replace: 
-              path: /etc/haproxy/haproxy.cfg
-              regexp: ":5000"
-              replace: ":8080"
-          - name: 'Removing . . .- '
-            lineinfile:
-               path: /etc/haproxy/haproxy.cfg
-               regexp: '{{item.From}}'
-               line: '{{item.To}}'
-               state: present
-            with_items:
-                    - { From: '127.0.0.1:5001', To: 'server app1 192.168.43.103:80 check' }
-                    - { From: '127.0.0.1:5002', To: 'server app2 192.168.43.2:80 check' }
-                    - { From: '127.0.0.1:5003', To: 'server app3 192.168.43.91:80 check' }               
+- hosts: 'FrontEnd'
+  tasks:
+         - name: 'Installing Httpd Server : -'
+           package: 
+              name: httpd
+              state: present
 
-          - name: 'Starting HaProxy service :-'
-            service:
-              name: "haproxy"
-              state: started
-          - name: 'Stopping firewalld security'
-            service:
-              name: firewalld
-              state: stopped
+
+         - name: 'Installing php interpreter : -'
+           package: 
+              name: php
+              state: present
+
+         - name: 'Copying sourch code into Root Directory : -'
+           copy:
+              src: /var/www/html/index.php
+              dest: /var/www/html/
+              mode: '555'
+         - name: 'Restarting Httpd Server :- '
+           service:
+               name: httpd
+               state: restarted
+         - name: 'Stoping Firewalld Security :-' 
+           service:
+               name: firewalld
+               state: stopped
