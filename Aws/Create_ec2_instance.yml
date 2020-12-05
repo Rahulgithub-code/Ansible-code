@@ -16,21 +16,17 @@
           yum:
             name: python3
             state: present
-        - name: 'Installing boto package'
+        - name: 'Installing boto module'
           pip:
             name: boto
             state: present
-        - name: 'Installing boto3 package'
+        - name: 'Installing boto3 module'
           pip:
             name: boto3
             state: present
-        - name: 'Installing BotoCore'
+        - name: 'Installing BotoCore module'
           pip: 
             name: botocore
-            state: present
-        - name: 'Installing AwsCLI'
-          pip:
-            name: awscli
             state: present
         - name: 'Creating instance name with - {{instance_name}}'
           community.aws.ec2_instance:
