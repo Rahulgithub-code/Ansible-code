@@ -1,0 +1,43 @@
+- hosts: 192.168.43.91
+  vars_prompt: 
+        - name: access_key
+          private: no
+          prompt: 'Please enter Aws access key - '
+
+        - name: secret_key
+          private: yes
+          prompt: 'Please enter Aws secret key - '
+        
+        - name: instance_name
+          private: no
+          prompt: 'Please type your instance name - '   
+  tasks: 
+        - name: 'Installing Python3' 
+          yum:
+            name: python3
+            state: present
+        - name: 'Installing boto package'
+          pip:
+            name: boto
+            state: present
+        - name: 'Installing boto3 package'
+          pip:
+            name: boto3
+            state: present
+        - name: 'Installing BotoCore'
+          pip: 
+            name: botocore
+            state: present
+        - name: 'Installing AwsCLI'
+          pip:
+            name: awscli
+            state: present
+        - name: 'Creating instance name with - {{instance_name}}'
+          community.aws.ec2_instance:
+            name: '{{instance_name}}' 
+            aws_access_key: '{{access_key}}'
+            aws_secret_key: '{{secret_key}}'
+            region: ap-south-1
+            instance_type: t2.micro
+            image_id: ami-0a4a70bd98c6d6441
+            state: present
