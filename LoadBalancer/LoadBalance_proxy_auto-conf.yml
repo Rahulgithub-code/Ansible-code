@@ -1,30 +1,40 @@
-- hosts: 'BackEnd'
-  tasks :
+- hosts: 'FrontEnd'
+  tasks:
           - name: Installing HaProxy
             package:
-                name: haproxy
-                state: present
-          - name: 'Replacing bind port'
-            replace: 
+              name: haproxy
+              state: present
+          - name: 'Replacing bind port with 8080'
+            replace:
               path: /etc/haproxy/haproxy.cfg
               regexp: ":5000"
               replace: ":8080"
-          - name: 'Removing . . .- '
+          - name: 'Removing localhost from BachEnd app '
             lineinfile:
                path: /etc/haproxy/haproxy.cfg
                regexp: '{{item.From}}'
                line: '{{item.To}}'
                state: present
             with_items:
-                    - { From: '127.0.0.1:5001', To: 'server app1 192.168.43.103:80 check' }
-                    - { From: '127.0.0.1:5002', To: 'server app2 192.168.43.2:80 check' }
-                    - { From: '127.0.0.1:5003', To: 'server app3 192.168.43.91:80 check' }               
-
-          - name: 'Starting HaProxy service :-'
+                    - { From: '127.0.0.1:5001', To: '' }
+                    - { From: '127.0.0.1:5002', To: '' }
+                    - { From: '127.0.0.1:5003', To: '' }
+                    - { From: '127.0.0.1:5004', To: '' }
+                    - { From: 'balance     roundrobin', To: '' }
+          - name: 'Adding Ip address in config file'
+            blockinfile:
+               path: /etc/haproxy/haproxy.cfg
+               insertafter: 'backend app'
+               block: |
+                       balance roundrobin
+                       {% for i in groups['BackEnd'] %}
+                       server app{{loop.index}} {{ i }}:80 check
+                       {% endfor %}
+          - name: 'Restarting Haproxy'
+            service: 
+               name: haproxy
+               state: restarted
+          - name: Stopping firewalld
             service:
-              name: "haproxy"
-              state: started
-          - name: 'Stopping firewalld security'
-            service:
-              name: firewalld
-              state: stopped
+               name: firewalld
+               state: stopped
