@@ -1,4 +1,4 @@
-- hosts: 'FrontEnd'
+- hosts: 'BackEnd'
   tasks:
          - name: 'Installing Httpd Server : -'
            package: 
